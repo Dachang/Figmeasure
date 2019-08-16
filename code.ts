@@ -13,32 +13,54 @@ figma.loadFontAsync({ family: "Roboto", style: "Regular" });
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 figma.ui.onmessage = msg => {
-  // create width spec and display at the bottom
-  if (msg.type === 'create-width-bottom') {
+  // create width spec and display at the bottom / center / top of the frame
+  if (msg.type === 'create-width-bottom' || 
+      msg.type === 'create-width-top' || 
+      msg.type === 'create-width-center') {
     for (const node of figma.currentPage.selection) {
       // set up base frame
       const widthFrame = figma.createFrame();
-      widthFrame.resizeWithoutConstraints(node.width, node.height + 34);
+      widthFrame.resizeWithoutConstraints(node.width, node.height + 16);
       widthFrame.backgrounds = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}, opacity: 0}];
       widthFrame.x = node.x;
-      widthFrame.y = node.y;
       node.parent.appendChild(widthFrame);
       // calculate width & display
       const widthText = figma.createText();
       widthText.characters = node.width.toString().concat("px");
       widthText.x = node.width/2 - widthText.width/2;
-      widthText.y = node.height + 14;
-      widthFrame.appendChild(widthText);
+      widthText.fills = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}}];
+      const textContainer = figma.createRectangle();
+      textContainer.resizeWithoutConstraints(widthText.width, widthText.height);
+      textContainer.x = widthText.x;
+      textContainer.fills = [{type: 'SOLID', color: {r: 1, g: 0.33, b: 0}}];
       const widthLine = figma.createLine();
       widthLine.x = 0;
-      widthLine.y = node.height + 10;
-      widthLine.strokes = [{type: 'SOLID', color: {r: 1, g: 0.5, b: 0}}];
+      if (msg.type === 'create-width-bottom') {
+        widthFrame.y = node.y;
+        widthText.y = node.height + 2;
+        textContainer.y = widthText.y;
+        widthLine.y = node.height + 10;
+      } else if (msg.type === 'create-width-top') {
+        widthFrame.y = node.y - 17;
+        widthText.y = 0;
+        textContainer.y = widthText.y;
+        widthLine.y = 7;
+      } else {
+        widthFrame.y = node.y;
+        widthFrame.resizeWithoutConstraints(node.width, node.height);
+        widthText.y = node.height / 2 - 7;
+        textContainer.y = widthText.y;
+        widthLine.y = node.height / 2;
+      }
+      widthLine.strokes = [{type: 'SOLID', color: {r: 1, g: 0.33, b: 0}}];
       widthLine.strokeCap = "ARROW_EQUILATERAL";
       widthLine.resize(node.width, 0);
       widthFrame.appendChild(widthLine);
+      widthFrame.appendChild(textContainer);
+      widthFrame.appendChild(widthText);
     }
   }
-  // create height spec and display at the right
+  // create height spec and display at the right / center / left of the frame
   if (msg.type === 'create-height-right') {
     for (const node of figma.currentPage.selection) {
       // set up base frame
@@ -51,20 +73,26 @@ figma.ui.onmessage = msg => {
       // calculate height & displays
       const heightText = figma.createText();
       heightText.characters = node.height.toString().concat("px");
-      heightText.x = node.width + 14;
-      heightText.rotation = 90;
-      heightText.y = (node.height + heightText.width) / 2;
-      heightFrame.resizeWithoutConstraints(node.width + 14 + heightText.height, node.height);
-      heightFrame.appendChild(heightText);
+      heightText.x = node.width - 8;
+      heightText.y = (node.height - heightText.height) / 2;
+      heightText.fills = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}}];
+      const textContainer = figma.createRectangle();
+      textContainer.resizeWithoutConstraints(heightText.width, heightText.height);
+      textContainer.x = heightText.x;
+      textContainer.y = heightText.y;
+      textContainer.fills = [{type: 'SOLID', color: {r: 1, g: 0.33, b: 0}}];
+      heightFrame.resizeWithoutConstraints(node.width + 11 + heightText.height, node.height);
       const heightLine = figma.createLine();
       heightLine.x = node.width + 10;
       heightLine.y = 0;
-      heightLine.strokes = [{type: 'SOLID', color: {r: 1, g: 0.5, b: 0}}];
+      heightLine.strokes = [{type: 'SOLID', color: {r: 1, g: 0.33, b: 0}}];
       heightLine.strokeCap = "ARROW_EQUILATERAL";
       heightLine.resize(node.width, 0);
       heightLine.rotation = 90;
       heightLine.y = heightLine.width;
       heightFrame.appendChild(heightLine);
+      heightFrame.appendChild(textContainer);
+      heightFrame.appendChild(heightText);
     }
   }
 
