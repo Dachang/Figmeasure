@@ -1,10 +1,15 @@
 <h2>Figma Spec Generator</h2>
+<p>Sizes:</p>
 <button id="width-bottom">Create-Width-Bottom</button>
 <button id="width-top">Create-Width-Top</button>
 <button id="width-center">Create-Width-Center</button>
 <button id="height-right">Create-Height-Right</button>
 <button id="height-left">Create-Height-Left</button>
 <button id="height-center">Create-Height-Center</button>
+<br/>
+<br/>
+<p>Spacings:</p>
+<button id="margin-top">Create-Margin-Top</button>
 <br/>
 <br/>
 <button id="cancel">Cancel</button>
@@ -32,6 +37,10 @@ document.getElementById('height-left').onclick = () => {
 
 document.getElementById('height-center').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-height-center' } }, '*')
+}
+
+document.getElementById('margin-top').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-margin-top' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {

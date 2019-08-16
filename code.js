@@ -111,7 +111,49 @@ figma.ui.onmessage = msg => {
             heightFrame.appendChild(heightText);
         }
     }
-    // create spacing spec between an component & the outer canvas
+    // create spacing spec (top-margin) between an component & the outer canvas
+    if (msg.type === 'create-margin-top') {
+        for (const node of figma.currentPage.selection) {
+            if ("parent" in node) {
+                if (node.parent.type != "PAGE" && node.parent.type != "DOCUMENT") {
+                    const marginValue = Math.abs(node.y - node.parent.y);
+                    if (marginValue != 0) {
+                        const marginText = figma.createText();
+                        marginText.characters = marginValue.toString().concat("px");
+                        marginText.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+                        const textContainer = figma.createRectangle();
+                        textContainer.resizeWithoutConstraints(marginText.width, marginText.height);
+                        textContainer.x = marginText.x;
+                        textContainer.y = marginText.y;
+                        textContainer.fills = [{ type: 'SOLID', color: { r: 0.53, g: 0.31, b: 0.89 } }];
+                        const marginFrame = figma.createFrame();
+                        marginFrame.backgrounds = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+                        marginFrame.resizeWithoutConstraints(marginText.width, marginText.height);
+                        marginFrame.x = node.x + node.width / 2 - marginText.width / 2;
+                        marginFrame.y = marginValue < 14 ? node.parent.y : node.parent.y + marginValue / 2 - marginText.height / 2;
+                        // append child at last to avoid group size change
+                        marginFrame.clipsContent = false;
+                        node.parent.appendChild(marginFrame);
+                        const marginLine = figma.createLine();
+                        marginLine.strokes = [{ type: 'SOLID', color: { r: 0.53, g: 0.31, b: 0.89 } }];
+                        marginLine.resize(marginValue, 0);
+                        marginLine.rotation = 90;
+                        marginLine.y = marginValue / 2 + marginFrame.height / 2;
+                        marginLine.x = marginFrame.width / 2;
+                        marginFrame.appendChild(marginLine);
+                        marginFrame.appendChild(textContainer);
+                        marginFrame.appendChild(marginText);
+                    }
+                    else {
+                        //do nothing
+                    }
+                }
+                else {
+                    alert("We cannot measure margin of frames on root canvas");
+                }
+            }
+        }
+    }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
     if (msg.type === 'cancel') {
