@@ -1,0 +1,29 @@
+<h2>Figma Spec Generator</h2>
+<button id="width-bottom">Create-Width-Bottom</button>
+<button id="width-top">Create-Width-Top</button>
+<button id="width-center">Create-Width-Center</button>
+<button id="height-right">Create-Height-Right</button>
+<button id="cancel">Cancel</button>
+<script>
+
+document.getElementById('width-bottom').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-width-bottom' } }, '*')
+}
+
+document.getElementById('width-top').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-width-top' } }, '*')
+}
+
+document.getElementById('width-center').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-width-center' } }, '*')
+}
+
+document.getElementById('height-right').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-height-right' } }, '*')
+}
+
+document.getElementById('cancel').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+}
+
+</script>
