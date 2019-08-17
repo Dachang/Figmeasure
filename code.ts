@@ -111,11 +111,23 @@ figma.ui.onmessage = msg => {
     }
   }
   // create spacing spec (top-margin) between an component & the outer canvas
-  if (msg.type === 'create-margin-top') {
+  if (msg.type === 'create-margin-top' || 
+      msg.type === 'create-margin-left' ||
+      msg.type === 'create-margin-right' ||
+      msg.type === 'create-margin-bottom') {
     for (const node of figma.currentPage.selection) {
       if ("parent" in node) {
         if (node.parent.type != "PAGE" && node.parent.type != "DOCUMENT") {
-          const marginValue = Math.abs(node.y - node.parent.y);
+          let marginValue = 0
+          if (msg.type === 'create-margin-top') {
+            marginValue = Math.abs(node.y - node.parent.y);
+          } else if (msg.type === 'create-margin-left') {
+            marginValue = Math.abs(node.x - node.parent.x);
+          } else if (msg.type === 'create-margin-right') {
+            marginValue = Math.abs(node.parent.width - Math.abs(node.x - node.parent.x) - node.width);
+          } else {
+            marginValue = Math.abs(node.parent.height - Math.abs(node.y - node.parent.y) - node.height);
+          }
           if (marginValue != 0) {
             const marginText = figma.createText();
             marginText.characters = marginValue.toString().concat("px");
@@ -130,28 +142,55 @@ figma.ui.onmessage = msg => {
             const marginFrame = figma.createFrame();
             marginFrame.backgrounds = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}, opacity: 0}];
             marginFrame.resizeWithoutConstraints(marginText.width, marginText.height);
-            marginFrame.x = node.x + node.width / 2 - marginText.width / 2;
-            marginFrame.y = marginValue < 14 ? node.parent.y : node.parent.y + marginValue / 2 - marginText.height / 2;
+            if (msg.type === 'create-margin-top') {
+              marginFrame.x = node.x + node.width / 2 - marginText.width / 2;
+              marginFrame.y = marginValue < 14 ? node.parent.y : node.parent.y + marginValue / 2 - marginText.height / 2;
+            } else if (msg.type === 'create-margin-left') {
+              marginFrame.x = marginValue < marginText.width ? node.parent.x : node.parent.x + marginValue / 2 - marginText.width / 2;
+              marginFrame.y = node.y + node.height / 2 - marginText.height / 2;
+            } else if (msg.type === 'create-margin-right') {
+              marginFrame.x = marginValue < marginText.width ? node.parent.x + node.parent.width - marginFrame.width : node.x + node.width + marginValue / 2 - marginText.width / 2;
+              marginFrame.y = node.y + node.height / 2 - marginText.height / 2;
+            } else {
+              marginFrame.x = node.x + node.width / 2 - marginText.width / 2;
+              marginFrame.y = marginValue < 14 ? node.parent.y + node.parent.height - marginFrame.height : node.y + node.height + marginValue / 2 - marginText.height / 2;
+            }
             // append child at last to avoid group size change
             marginFrame.clipsContent = false;
             node.parent.appendChild(marginFrame);
-            
+
             const marginLine = figma.createLine();
             marginLine.strokes = [{type: 'SOLID', color: {r: 0.53, g: 0.31, b: 0.89}}];
             marginLine.resize(marginValue, 0);
-            marginLine.rotation = 90;
-            marginLine.y = marginValue/2 + marginFrame.height/2;
-            marginLine.x = marginFrame.width/2;
+            if (msg.type === 'create-margin-top' || msg.type === 'create-margin-bottom') {
+              marginLine.rotation = 90;
+              marginLine.y = marginValue/2 + marginFrame.height/2;
+              marginLine.x = marginFrame.width/2;
+            } else if (msg.type === 'create-margin-left' || msg.type === 'create-margin-right') {
+              marginLine.y = marginFrame.height / 2;
+              marginLine.x = -(marginValue - marginFrame.width)/2;
+            }
   
             marginFrame.appendChild(marginLine);
             marginFrame.appendChild(textContainer);
             marginFrame.appendChild(marginText);
           } else {
-            //do nothing
+            const marginLine = figma.createLine();
+            marginLine.strokes = [{type: 'SOLID', color: {r: 0.53, g: 0.31, b: 0.89}}];
+            if (msg.type === 'create-margin-top' || msg.type === 'create-margin-bottom') {
+              marginLine.resize(node.parent.width, 0);
+              marginLine.x = node.parent.x;
+              marginLine.y = msg.type === 'create-margin-top' ? node.parent.y : node.parent.y + node.parent.height;
+            } else {
+              marginLine.resize(node.parent.height, 0);
+              marginLine.rotation = 90;
+              marginLine.x = msg.type === 'create-margin-left' ? node.parent.x : node.parent.x + node.parent.width;
+              marginLine.y = node.parent.y + node.parent.height;
+            }
+            node.parent.appendChild(marginLine);
           }
-
         } else {
-          alert("We cannot measure margin of frames on root canvas")
+          alert("We cannot measure margin of frames on root canvas");
         }
       }
     }

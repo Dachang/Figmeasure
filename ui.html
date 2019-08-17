@@ -10,6 +10,9 @@
 <br/>
 <p>Spacings:</p>
 <button id="margin-top">Create-Margin-Top</button>
+<button id="margin-left">Create-Margin-Left</button>
+<button id="margin-right">Create-Margin-Right</button>
+<button id="margin-bottom">Create-Margin-Bottom</button>
 <br/>
 <br/>
 <button id="cancel">Cancel</button>
@@ -41,6 +44,18 @@ document.getElementById('height-center').onclick = () => {
 
 document.getElementById('margin-top').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-margin-top' } }, '*')
+}
+
+document.getElementById('margin-left').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-margin-left' } }, '*')
+}
+
+document.getElementById('margin-right').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-margin-right' } }, '*')
+}
+
+document.getElementById('margin-bottom').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-margin-bottom' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {
