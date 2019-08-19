@@ -197,24 +197,36 @@ figma.ui.onmessage = msg => {
   }
 
   // create spacing spec between two components
-  if (msg.type === 'create-spacing-horizon') {
+  if (msg.type === 'create-spacing-horizon' || msg.type === 'create-spacing-portrait') {
     const numOfSel = figma.currentPage.selection.length;
     if (numOfSel === 2) {
       let lhsSelection = figma.currentPage.selection[0];
       let rhsSelection = figma.currentPage.selection[1];
       let spacingValue = 0;
       let displaySpacing = false;
-      // calculate spcaing when no oevrlap on x axis
-      if (lhsSelection.x + lhsSelection.width < rhsSelection.x || lhsSelection.x + lhsSelection.width === rhsSelection.x) {
-        spacingValue = Math.abs(rhsSelection.x - lhsSelection.x - lhsSelection.width);
-        displaySpacing = true;
-      } else if (lhsSelection.x > rhsSelection.x + rhsSelection.width || lhsSelection.x === rhsSelection.x + rhsSelection.width) {
-        spacingValue = Math.abs(lhsSelection.x - rhsSelection.x - rhsSelection.width);
-        displaySpacing = true;
+      // calculate spcaing ensure no oevrlap
+      if (msg.type === 'create-spacing-horizon') {
+        if (lhsSelection.x + lhsSelection.width < rhsSelection.x || lhsSelection.x + lhsSelection.width === rhsSelection.x) {
+          spacingValue = Math.abs(rhsSelection.x - lhsSelection.x - lhsSelection.width);
+          displaySpacing = true;
+        } else if (lhsSelection.x > rhsSelection.x + rhsSelection.width || lhsSelection.x === rhsSelection.x + rhsSelection.width) {
+          spacingValue = Math.abs(lhsSelection.x - rhsSelection.x - rhsSelection.width);
+          displaySpacing = true;
+        } else {
+          // has overlap, do nothing
+        }
       } else {
-        // has overlap, do nothing
+        if (lhsSelection.y + lhsSelection.height < rhsSelection.y || lhsSelection.y + lhsSelection.height === rhsSelection.y) {
+          spacingValue = Math.abs(rhsSelection.y - lhsSelection.y - lhsSelection.height);
+          displaySpacing = true;
+        } else if (lhsSelection.y > rhsSelection.y + rhsSelection.height || lhsSelection.y === rhsSelection.y + rhsSelection.height) {
+          spacingValue = Math.abs(lhsSelection.y - rhsSelection.y - rhsSelection.height);
+          displaySpacing = true;
+        } else {
+          // has overlap, do nothing
+        }
       }
-
+      // display spcaing when no oevrlap
       if (displaySpacing) {
         const spacingText = figma.createText();
         spacingText.characters = spacingValue.toString().concat("px");
@@ -231,18 +243,32 @@ figma.ui.onmessage = msg => {
         spacingFrame.resizeWithoutConstraints(spacingText.width, spacingText.height);
         spacingFrame.clipsContent = false;
 
-        spacingFrame.x = lhsSelection.x < rhsSelection.x ? 
-        lhsSelection.x + lhsSelection.width + spacingValue / 2 - spacingText.width / 2 : 
-        rhsSelection.x + rhsSelection.width + spacingValue / 2 - spacingText.width / 2;
-        spacingFrame.y = lhsSelection.height < rhsSelection.height ? 
-        lhsSelection.y + lhsSelection.height / 2 - spacingText.height / 2 :
-        rhsSelection.y + rhsSelection.height / 2 - spacingText.height / 2 ;
-
         const spacingLine = figma.createLine();
         spacingLine.strokes = [{type: 'SOLID', color: {r: 0.53, g: 0.31, b: 0.89}}];
         spacingLine.resize(spacingValue, 0);
-        spacingLine.y = spacingText.height / 2;
-        spacingLine.x = -(spacingValue - spacingText.width)/2;
+
+        if (msg.type === 'create-spacing-horizon') {
+          spacingFrame.x = lhsSelection.x < rhsSelection.x ? 
+          lhsSelection.x + lhsSelection.width + spacingValue / 2 - spacingText.width / 2 : 
+          rhsSelection.x + rhsSelection.width + spacingValue / 2 - spacingText.width / 2;
+          spacingFrame.y = lhsSelection.height < rhsSelection.height ? 
+          lhsSelection.y + lhsSelection.height / 2 - spacingText.height / 2 :
+          rhsSelection.y + rhsSelection.height / 2 - spacingText.height / 2;
+  
+          spacingLine.y = spacingText.height / 2;
+          spacingLine.x = -(spacingValue - spacingText.width)/2;
+        } else {
+          spacingFrame.x = lhsSelection.width < rhsSelection.width ? 
+          lhsSelection.x + lhsSelection.width / 2 - spacingText.width / 2 :
+          rhsSelection.x + rhsSelection.width / 2 - spacingText.width / 2;
+          spacingFrame.y = lhsSelection.y < rhsSelection.y ? 
+          lhsSelection.y + lhsSelection.height + spacingValue / 2 - spacingText.height / 2 : 
+          rhsSelection.y + rhsSelection.height + spacingValue / 2 - spacingText.height / 2;
+
+          spacingLine.x = spacingText.width / 2;
+          spacingLine.y -= (spacingValue - spacingText.height) / 2;
+          spacingLine.rotation = -90;
+        }
         
         spacingFrame.appendChild(spacingLine);
         spacingFrame.appendChild(textContainer);
