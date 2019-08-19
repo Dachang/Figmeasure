@@ -102,7 +102,7 @@ figma.ui.onmessage = msg => {
       heightLine.y = 0;
       heightLine.strokes = [{type: 'SOLID', color: {r: 1, g: 0.33, b: 0}}];
       heightLine.strokeCap = "ARROW_EQUILATERAL";
-      heightLine.resize(node.width, 0);
+      heightLine.resize(node.height, 0);
       heightLine.rotation = 90;
       heightLine.y = heightLine.width;
       heightFrame.appendChild(heightLine);
@@ -278,6 +278,15 @@ figma.ui.onmessage = msg => {
       }
     } else {
       alert("You must select two frames to mark");
+    }
+  }
+
+  // create spacing spec between two components
+  if (msg.type === 'create-font-spec') {
+    for (const node of figma.currentPage.selection) {
+      if (node.type === "TEXT") {
+
+      }
     }
   }
 

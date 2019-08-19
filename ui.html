@@ -17,6 +17,10 @@
 <button id="spacing-portrait">Create-Space-Portrait</button>
 <br/>
 <br/>
+<p>Label:</p>
+<button id="font-spec">Create-Font-Spec</button>
+<br/>
+<br/>
 <button id="cancel">Cancel</button>
 <script>
 
@@ -66,6 +70,10 @@ document.getElementById('spacing-horizon').onclick = () => {
 
 document.getElementById('spacing-portrait').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-spacing-portrait' } }, '*')
+}
+
+document.getElementById('font-spec').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-font-spec' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {
