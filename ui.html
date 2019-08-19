@@ -13,6 +13,7 @@
 <button id="margin-left">Create-Margin-Left</button>
 <button id="margin-right">Create-Margin-Right</button>
 <button id="margin-bottom">Create-Margin-Bottom</button>
+<button id="spacing-horizon">Create-Space-Horizon</button>
 <br/>
 <br/>
 <button id="cancel">Cancel</button>
@@ -56,6 +57,10 @@ document.getElementById('margin-right').onclick = () => {
 
 document.getElementById('margin-bottom').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-margin-bottom' } }, '*')
+}
+
+document.getElementById('spacing-horizon').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-spacing-horizon' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {

@@ -110,7 +110,7 @@ figma.ui.onmessage = msg => {
       heightFrame.appendChild(heightText);
     }
   }
-  // create spacing spec (top-margin) between an component & the outer canvas
+  // create spacing spec (direction-margins) between components and the outer canvas
   if (msg.type === 'create-margin-top' || 
       msg.type === 'create-margin-left' ||
       msg.type === 'create-margin-right' ||
@@ -193,6 +193,65 @@ figma.ui.onmessage = msg => {
           alert("We cannot measure margin of frames on root canvas");
         }
       }
+    }
+  }
+
+  // create spacing spec between two components
+  if (msg.type === 'create-spacing-horizon') {
+    const numOfSel = figma.currentPage.selection.length;
+    if (numOfSel === 2) {
+      let lhsSelection = figma.currentPage.selection[0];
+      let rhsSelection = figma.currentPage.selection[1];
+      let spacingValue = 0;
+      let displaySpacing = false;
+      // calculate spcaing when no oevrlap on x axis
+      if (lhsSelection.x + lhsSelection.width < rhsSelection.x || lhsSelection.x + lhsSelection.width === rhsSelection.x) {
+        spacingValue = Math.abs(rhsSelection.x - lhsSelection.x - lhsSelection.width);
+        displaySpacing = true;
+      } else if (lhsSelection.x > rhsSelection.x + rhsSelection.width || lhsSelection.x === rhsSelection.x + rhsSelection.width) {
+        spacingValue = Math.abs(lhsSelection.x - rhsSelection.x - rhsSelection.width);
+        displaySpacing = true;
+      } else {
+        // has overlap, do nothing
+      }
+
+      if (displaySpacing) {
+        const spacingText = figma.createText();
+        spacingText.characters = spacingValue.toString().concat("px");
+        spacingText.fills = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}}];
+        
+        const textContainer = figma.createRectangle();
+        textContainer.resizeWithoutConstraints(spacingText.width, spacingText.height);
+        textContainer.x = spacingText.x;
+        textContainer.y = spacingText.y;
+        textContainer.fills = [{type: 'SOLID', color: {r: 0.53, g: 0.31, b: 0.89}}];
+  
+        const spacingFrame = figma.createFrame();
+        spacingFrame.backgrounds = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}, opacity: 0}];
+        spacingFrame.resizeWithoutConstraints(spacingText.width, spacingText.height);
+        spacingFrame.clipsContent = false;
+
+        spacingFrame.x = lhsSelection.x < rhsSelection.x ? 
+        lhsSelection.x + lhsSelection.width + spacingValue / 2 - spacingText.width / 2 : 
+        rhsSelection.x + rhsSelection.width + spacingValue / 2 - spacingText.width / 2;
+        spacingFrame.y = lhsSelection.height < rhsSelection.height ? 
+        lhsSelection.y + lhsSelection.height / 2 - spacingText.height / 2 :
+        rhsSelection.y + rhsSelection.height / 2 - spacingText.height / 2 ;
+
+        const spacingLine = figma.createLine();
+        spacingLine.strokes = [{type: 'SOLID', color: {r: 0.53, g: 0.31, b: 0.89}}];
+        spacingLine.resize(spacingValue, 0);
+        spacingLine.y = spacingText.height / 2;
+        spacingLine.x = -(spacingValue - spacingText.width)/2;
+        
+        spacingFrame.appendChild(spacingLine);
+        spacingFrame.appendChild(textContainer);
+        spacingFrame.appendChild(spacingText);
+      } else {
+        //do nothing for now
+      }
+    } else {
+      alert("You must select two frames to mark");
     }
   }
 
