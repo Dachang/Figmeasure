@@ -6,6 +6,9 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
@@ -289,9 +292,49 @@ figma.ui.onmessage = msg => {
     }
     // create spacing spec between two components
     if (msg.type === 'create-font-spec') {
+        let hasTextNode = false;
         for (const node of figma.currentPage.selection) {
             if (node.type === "TEXT") {
+                hasTextNode = true;
+                const fontSpecText = figma.createText();
+                fontSpecText.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+                fontSpecText.x = 4;
+                fontSpecText.y = 4;
+                fontSpecText.characters = "layer-name: " + node.name + "\n" +
+                    "color: " + rgbToHex(Math.round(node.fills[0].color.r * 255), Math.round(node.fills[0].color.g * 255), Math.round(node.fills[0].color.b * 255)) + "  " + Math.round(node.fills[0].opacity * 100) + "%\n" +
+                    "opacity: " + Math.round(node.opacity * 100) + "%\n" +
+                    "font-size: " + node.fontSize.toString() + "px\n" +
+                    "font-face: " + node.fontName.family + " " + node.fontName.style + "\n" +
+                    "letter-spacing: " + node.letterSpacing.value + "px\n" +
+                    "line-height: " + node.lineHeight.value + "px";
+                const fontSpecTextContainer = figma.createRectangle();
+                fontSpecTextContainer.resizeWithoutConstraints(fontSpecText.width + 8, fontSpecText.height + 8);
+                fontSpecTextContainer.x = 0;
+                fontSpecTextContainer.y = 0;
+                fontSpecTextContainer.fills = [{ type: 'SOLID', color: { r: 1, g: 0.706, b: 0 } }];
+                fontSpecTextContainer.cornerRadius = 2;
+                const arrowRect = figma.createRectangle();
+                arrowRect.resizeWithoutConstraints(6, 6);
+                arrowRect.fills = [{ type: 'SOLID', color: { r: 1, g: 0.706, b: 0 } }];
+                arrowRect.x = 0;
+                arrowRect.y = fontSpecTextContainer.height / 2 - arrowRect.height / 2;
+                arrowRect.rotation = -45;
+                const fontSpecFrame = figma.createFrame();
+                fontSpecFrame.backgrounds = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+                fontSpecFrame.resizeWithoutConstraints(fontSpecTextContainer.width, fontSpecTextContainer.height);
+                fontSpecFrame.clipsContent = false;
+                fontSpecFrame.x = node.x + node.width + 6;
+                fontSpecFrame.y = node.y + node.height / 2 - fontSpecFrame.height / 2;
+                fontSpecFrame.appendChild(fontSpecTextContainer);
+                fontSpecFrame.appendChild(arrowRect);
+                fontSpecFrame.appendChild(fontSpecText);
             }
+            else {
+                //do nothing for non-text node
+            }
+        }
+        if (!hasTextNode) {
+            alert("Please select at least one text node to display font spec");
         }
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
