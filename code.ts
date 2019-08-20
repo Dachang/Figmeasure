@@ -287,69 +287,88 @@ figma.ui.onmessage = msg => {
     }
   }
 
-  // create spacing spec between two components
+  // create font specs for labels
   if (msg.type === 'create-font-spec-on-right' ||
       msg.type === 'create-font-spec-on-left' ||
       msg.type === 'create-font-spec-on-top' ||
       msg.type === 'create-font-spec-on-bottom') {
-    let hasTextNode = false;
+
     for (const node of figma.currentPage.selection) {
+      const fontSpecText = figma.createText();
+      fontSpecText.fills = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}}];
+      fontSpecText.x = 4;
+      fontSpecText.y = 4;
       if (node.type === "TEXT") {
-        hasTextNode = true;
-        const fontSpecText = figma.createText();
-        fontSpecText.fills = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}}];
-        fontSpecText.x = 4;
-        fontSpecText.y = 4;
         fontSpecText.characters = "layer-name: " + node.name + "\n" + 
-                                   "color: " + rgbToHex(Math.round(node.fills[0].color.r*255), Math.round(node.fills[0].color.g*255), Math.round(node.fills[0].color.b*255)) + "  " + Math.round(node.fills[0].opacity * 100) + "%\n" + 
-                                   "opacity: " + Math.round(node.opacity * 100) + "%\n" + 
-                                   "font-size: " + node.fontSize.toString() + "px\n" +
-                                   "font-face: " + node.fontName.family + " " + node.fontName.style + "\n" +
-                                   "letter-spacing: " + node.letterSpacing.value + "px\n" +
-                                   "line-height: " + node.lineHeight.value + "px";
-        
-        const fontSpecTextContainer = figma.createRectangle();
-        fontSpecTextContainer.resizeWithoutConstraints(fontSpecText.width + 8, fontSpecText.height + 8);
-        fontSpecTextContainer.x = 0;
-        fontSpecTextContainer.y = 0;
-        fontSpecTextContainer.fills = [{type: 'SOLID', color: {r: 1, g: 0.706, b: 0}}];
-        fontSpecTextContainer.cornerRadius = 2;
-
-        const arrowRect = figma.createRectangle();
-        arrowRect.resizeWithoutConstraints(6, 6);
-        arrowRect.fills = [{type: 'SOLID', color: {r: 1, g: 0.706, b: 0}}];
-        arrowRect.rotation = -45;
-
-        const fontSpecFrame = figma.createFrame();
-        fontSpecFrame.backgrounds = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}, opacity: 0}];
-        fontSpecFrame.resizeWithoutConstraints(fontSpecTextContainer.width, fontSpecTextContainer.height);
-        fontSpecFrame.clipsContent = false;
-
-        fontSpecFrame.x = node.x + node.width + 6;
-
-        if (msg.type === 'create-font-spec-on-right' || msg.type === 'create-font-spec-on-left') {
-          arrowRect.x = msg.type === 'create-font-spec-on-right' ? 0 : fontSpecTextContainer.width;
-          arrowRect.y = fontSpecTextContainer.height / 2 - arrowRect.height / 2;
-          fontSpecFrame.x = msg.type === 'create-font-spec-on-right' ? node.x + node.width + 6 : node.x - fontSpecFrame.width - 6;
-          fontSpecFrame.y = node.y + node.height/2 - fontSpecFrame.height / 2;
+                                  "color: " + rgbToHex(Math.round(node.fills[0].color.r*255), Math.round(node.fills[0].color.g*255), Math.round(node.fills[0].color.b*255)) + "  " + Math.round(node.fills[0].opacity * 100) + "%\n" + 
+                                  "opacity: " + Math.round(node.opacity * 100) + "%\n" + 
+                                  "font-size: " + node.fontSize.toString() + "px\n" +
+                                  "font-face: " + node.fontName.family + " " + node.fontName.style + "\n" +
+                                  "letter-spacing: " + node.letterSpacing.value + "px\n" +
+                                  "line-height: " + node.lineHeight.value + "px";
+      } else {
+        let strokeValue = "";
+        let shadowValue = "";
+        fontSpecText.characters = "layer-name: " + node.name + "\n" + 
+                                  "color: " + rgbToHex(Math.round(node.fills[0].color.r*255), Math.round(node.fills[0].color.g*255), Math.round(node.fills[0].color.b*255)) + "  " + Math.round(node.fills[0].opacity * 100) + "%\n" + 
+                                  "opacity: " + Math.round(node.opacity * 100) + "%";
+        if (node.strokes[0]) {
+          strokeValue = rgbToHex(Math.round(node.strokes[0].color.r*255), Math.round(node.strokes[0].color.g*255), Math.round(node.strokes[0].color.b*255)) + "  " + Math.round(node.strokes[0].opacity * 100) + "% " + node.strokeWeight.toString() + "px " + node.strokeAlign;
+          fontSpecText.characters += "\nborder: " + strokeValue;
         } else {
-          arrowRect.x = fontSpecTextContainer.width / 2 - arrowRect.width / 2;
-          arrowRect.y = msg.type === 'create-font-spec-on-bottom' ? -4 : fontSpecTextContainer.height - 4;
-          fontSpecFrame.x = node.x + node.width/2 - fontSpecFrame.width / 2;
-          fontSpecFrame.y = msg.type === 'create-font-spec-on-bottom' ? node.y + node.height + 4 : node.y - fontSpecFrame.height - 4;
+          //do nothing
         }
         
-        fontSpecFrame.appendChild(fontSpecTextContainer);
-        fontSpecFrame.appendChild(arrowRect);
-        fontSpecFrame.appendChild(fontSpecText);
+        if (node.effects[0]) {
+          // alert(node.effects[0].offset.y)
+          shadowValue = "shadow-color: " + rgbToHex(Math.round(node.effects[0].color.r*255), Math.round(node.effects[0].color.g*255), Math.round(node.effects[0].color.b*255)) + "  " + Math.round(node.effects[0].color.a * 100) + "%" + 
+                        "\nshadow-offset-x: " + node.effects[0].offset.x + "px\nshadow-offset-y: " + node.effects[0].offset.y + "px\nshadow-blur: " + node.effects[0].radius + "px";
+          fontSpecText.characters += "\n" + shadowValue;
+        } else {
+          // do nothing
+        }
 
-        node.parent.appendChild(fontSpecFrame);
-      } else {
-        //do nothing for non-text node
+        if (node.cornerRadius !== 0) {
+          fontSpecText.characters += "\ncorner-radius: " + node.cornerRadius + "px";
+        }
       }
-    }
-    if (!hasTextNode) {
-      alert("Please select at least one text node to display font spec");
+      
+      const fontSpecTextContainer = figma.createRectangle();
+      fontSpecTextContainer.resizeWithoutConstraints(fontSpecText.width + 8, fontSpecText.height + 8);
+      fontSpecTextContainer.x = 0;
+      fontSpecTextContainer.y = 0;
+      fontSpecTextContainer.fills = [{type: 'SOLID', color: {r: 1, g: 0.706, b: 0}}];
+      fontSpecTextContainer.cornerRadius = 2;
+
+      const arrowRect = figma.createRectangle();
+      arrowRect.resizeWithoutConstraints(6, 6);
+      arrowRect.fills = [{type: 'SOLID', color: {r: 1, g: 0.706, b: 0}}];
+      arrowRect.rotation = -45;
+
+      const fontSpecFrame = figma.createFrame();
+      fontSpecFrame.backgrounds = [{type: 'SOLID', color: {r: 1, g: 1, b: 1}, opacity: 0}];
+      fontSpecFrame.resizeWithoutConstraints(fontSpecTextContainer.width, fontSpecTextContainer.height);
+      fontSpecFrame.clipsContent = false;
+
+      fontSpecFrame.x = node.x + node.width + 6;
+
+      if (msg.type === 'create-font-spec-on-right' || msg.type === 'create-font-spec-on-left') {
+        arrowRect.x = msg.type === 'create-font-spec-on-right' ? 0 : fontSpecTextContainer.width;
+        arrowRect.y = fontSpecTextContainer.height / 2 - arrowRect.height / 2;
+        fontSpecFrame.x = msg.type === 'create-font-spec-on-right' ? node.x + node.width + 6 : node.x - fontSpecFrame.width - 6;
+        fontSpecFrame.y = node.y + node.height/2 - fontSpecFrame.height / 2;
+      } else {
+        arrowRect.x = fontSpecTextContainer.width / 2 - arrowRect.width / 2;
+        arrowRect.y = msg.type === 'create-font-spec-on-bottom' ? -4 : fontSpecTextContainer.height - 4;
+        fontSpecFrame.x = node.x + node.width/2 - fontSpecFrame.width / 2;
+        fontSpecFrame.y = msg.type === 'create-font-spec-on-bottom' ? node.y + node.height + 4 : node.y - fontSpecFrame.height - 4;
+      }
+      
+      fontSpecFrame.appendChild(fontSpecTextContainer);
+      fontSpecFrame.appendChild(arrowRect);
+      fontSpecFrame.appendChild(fontSpecText);
+
+      node.parent.appendChild(fontSpecFrame);
     }
   }
 

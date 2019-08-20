@@ -17,18 +17,11 @@
 <button id="spacing-portrait">Create-Space-Portrait</button>
 <br/>
 <br/>
-<p>Fonts:</p>
+<p>Labels:</p>
 <button id="font-spec-on-right">Create-Font-Spec-Right</button>
 <button id="font-spec-on-left">Create-Font-Spec-Left</button>
 <button id="font-spec-on-top">Create-Font-Spec-Top</button>
 <button id="font-spec-on-bottom">Create-Font-Spec-Bottom</button>
-<br/>
-<br/>
-<p>Layers:</p>
-<button id="layer-spec-on-right">Create-Layer-Spec-Right</button>
-<button id="layer-spec-on-left">Create-Layer-Spec-Left</button>
-<button id="layer-spec-on-top">Create-Layer-Spec-Top</button>
-<button id="layer-spec-on-bottom">Create-Layer-Spec-Bottom</button>
 <br/>
 <br/>
 <button id="cancel">Cancel</button>
@@ -96,22 +89,6 @@ document.getElementById('font-spec-on-top').onclick = () => {
 
 document.getElementById('font-spec-on-bottom').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-font-spec-on-bottom' } }, '*')
-}
-
-document.getElementById('layer-spec-on-right').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'create-layer-spec-on-right' } }, '*')
-}
-
-document.getElementById('layer-spec-on-left').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'create-layer-spec-on-left' } }, '*')
-}
-
-document.getElementById('layer-spec-on-top').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'create-layer-spec-on-top' } }, '*')
-}
-
-document.getElementById('layer-spec-on-bottom').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'create-layer-spec-on-bottom' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {
