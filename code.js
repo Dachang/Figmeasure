@@ -124,16 +124,16 @@ figma.ui.onmessage = msg => {
                 if (node.parent.type != "PAGE" && node.parent.type != "DOCUMENT") {
                     let marginValue = 0;
                     if (msg.type === 'create-margin-top') {
-                        marginValue = Math.abs(node.y - node.parent.y);
+                        marginValue = Math.round(Math.abs(node.y - node.parent.y));
                     }
                     else if (msg.type === 'create-margin-left') {
-                        marginValue = Math.abs(node.x - node.parent.x);
+                        marginValue = Math.round(Math.abs(node.x - node.parent.x));
                     }
                     else if (msg.type === 'create-margin-right') {
-                        marginValue = Math.abs(node.parent.width - Math.abs(node.x - node.parent.x) - node.width);
+                        marginValue = Math.round(Math.abs(node.parent.width - Math.abs(node.x - node.parent.x) - node.width));
                     }
                     else {
-                        marginValue = Math.abs(node.parent.height - Math.abs(node.y - node.parent.y) - node.height);
+                        marginValue = Math.round(Math.abs(node.parent.height - Math.abs(node.y - node.parent.y) - node.height));
                     }
                     if (marginValue != 0) {
                         const marginText = figma.createText();
@@ -216,11 +216,11 @@ figma.ui.onmessage = msg => {
             // calculate spcaing ensure no oevrlap
             if (msg.type === 'create-spacing-horizon') {
                 if (lhsSelection.x + lhsSelection.width < rhsSelection.x || lhsSelection.x + lhsSelection.width === rhsSelection.x) {
-                    spacingValue = Math.abs(rhsSelection.x - lhsSelection.x - lhsSelection.width);
+                    spacingValue = Math.round(Math.abs(rhsSelection.x - lhsSelection.x - lhsSelection.width));
                     displaySpacing = true;
                 }
                 else if (lhsSelection.x > rhsSelection.x + rhsSelection.width || lhsSelection.x === rhsSelection.x + rhsSelection.width) {
-                    spacingValue = Math.abs(lhsSelection.x - rhsSelection.x - rhsSelection.width);
+                    spacingValue = Math.round(Math.abs(lhsSelection.x - rhsSelection.x - rhsSelection.width));
                     displaySpacing = true;
                 }
                 else {
@@ -229,11 +229,11 @@ figma.ui.onmessage = msg => {
             }
             else {
                 if (lhsSelection.y + lhsSelection.height < rhsSelection.y || lhsSelection.y + lhsSelection.height === rhsSelection.y) {
-                    spacingValue = Math.abs(rhsSelection.y - lhsSelection.y - lhsSelection.height);
+                    spacingValue = Math.round(Math.abs(rhsSelection.y - lhsSelection.y - lhsSelection.height));
                     displaySpacing = true;
                 }
                 else if (lhsSelection.y > rhsSelection.y + rhsSelection.height || lhsSelection.y === rhsSelection.y + rhsSelection.height) {
-                    spacingValue = Math.abs(lhsSelection.y - rhsSelection.y - rhsSelection.height);
+                    spacingValue = Math.round(Math.abs(lhsSelection.y - rhsSelection.y - rhsSelection.height));
                     displaySpacing = true;
                 }
                 else {
@@ -281,6 +281,7 @@ figma.ui.onmessage = msg => {
                 spacingFrame.appendChild(spacingLine);
                 spacingFrame.appendChild(textContainer);
                 spacingFrame.appendChild(spacingText);
+                lhsSelection.parent.appendChild(spacingFrame);
             }
             else {
                 //do nothing for now
@@ -340,6 +341,7 @@ figma.ui.onmessage = msg => {
                 fontSpecFrame.appendChild(fontSpecTextContainer);
                 fontSpecFrame.appendChild(arrowRect);
                 fontSpecFrame.appendChild(fontSpecText);
+                node.parent.appendChild(fontSpecFrame);
             }
             else {
                 //do nothing for non-text node
