@@ -18,7 +18,10 @@
 <br/>
 <br/>
 <p>Label:</p>
-<button id="font-spec">Create-Font-Spec</button>
+<button id="font-spec-on-right">Create-Font-Spec-Right</button>
+<button id="font-spec-on-left">Create-Font-Spec-Left</button>
+<button id="font-spec-on-top">Create-Font-Spec-Top</button>
+<button id="font-spec-on-bottom">Create-Font-Spec-Bottom</button>
 <br/>
 <br/>
 <button id="cancel">Cancel</button>
@@ -72,8 +75,20 @@ document.getElementById('spacing-portrait').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-spacing-portrait' } }, '*')
 }
 
-document.getElementById('font-spec').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'create-font-spec' } }, '*')
+document.getElementById('font-spec-on-right').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-font-spec-on-right' } }, '*')
+}
+
+document.getElementById('font-spec-on-left').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-font-spec-on-left' } }, '*')
+}
+
+document.getElementById('font-spec-on-top').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-font-spec-on-top' } }, '*')
+}
+
+document.getElementById('font-spec-on-bottom').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'create-font-spec-on-bottom' } }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {
