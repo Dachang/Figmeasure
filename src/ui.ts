@@ -1,33 +1,4 @@
-<link rel="stylesheet" href="https://static.figma.com/api/figma-extension-api-0.0.1.css">
-<link rel="stylesheet" href="/style.css">
-
-<p>Sizes:</p>
-<button id="width-bottom">Create-Width-Bottom</button>
-<button id="width-top">Create-Width-Top</button>
-<button id="width-center">Create-Width-Center</button>
-<button id="height-right">Create-Height-Right</button>
-<button id="height-left">Create-Height-Left</button>
-<button id="height-center">Create-Height-Center</button>
-<br/>
-<br/>
-<p>Spacings:</p>
-<button id="margin-top">Create-Margin-Top</button>
-<button id="margin-left">Create-Margin-Left</button>
-<button id="margin-right">Create-Margin-Right</button>
-<button id="margin-bottom">Create-Margin-Bottom</button>
-<button id="spacing-horizon">Create-Space-Horizon</button>
-<button id="spacing-portrait">Create-Space-Portrait</button>
-<br/>
-<br/>
-<p>Labels:</p>
-<button id="font-spec-on-right">Create-Font-Spec-Right</button>
-<button id="font-spec-on-left">Create-Font-Spec-Left</button>
-<button id="font-spec-on-top">Create-Font-Spec-Top</button>
-<button id="font-spec-on-bottom">Create-Font-Spec-Bottom</button>
-<br/>
-<br/>
-<button id="cancel">Cancel</button>
-<script>
+import './ui.css'
 
 document.getElementById('width-bottom').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'create-width-bottom' } }, '*')
@@ -96,5 +67,3 @@ document.getElementById('font-spec-on-bottom').onclick = () => {
 document.getElementById('cancel').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
 }
-
-</script>

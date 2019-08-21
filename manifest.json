@@ -1,7 +1,7 @@
 {
-  "name": "Autospec",
+  "name": "Figmeasure",
   "id": "743719183188104088",
   "api": "1.0.0",
-  "main": "code.js",
-  "ui": "ui.html"
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
 }
