@@ -6,7 +6,7 @@
 // full browser enviroment (see documentation).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__);
+figma.showUI(__html__, {width: 136, height: 504});
 figma.loadFontAsync({ family: "Roboto", style: "Regular" });
 
 function rgbToHex(r, g, b) {

@@ -1,0 +1,7 @@
+<svg width="12" height="16" viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 3L11 3L12 3V2V1L11 1V2L1 2L1 1L0 1L0 2L0 3H1Z" fill="black" fill-opacity="0.8"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11 13L1 13L1.74846e-07 13L8.74228e-08 14L0 15L1 15L1 14L11 14L11 15L12 15L12 14L12 13L11 13Z" fill="black" fill-opacity="0.8"/>
+<line x1="5.83331" y1="4" x2="5.83331" y2="12" stroke="#FF00FF"/>
+<line x1="8" y1="4.5" x2="4" y2="4.5" stroke="#FF00FF"/>
+<line x1="8" y1="11.8333" x2="4" y2="11.8333" stroke="#FF00FF"/>
+</svg>
